@@ -7,7 +7,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from model import *
+from alex import alex
 
 # 准备数据集
 train_data = torchvision.datasets.CIFAR10(root="../dataset_chen",
@@ -31,8 +31,7 @@ train_loader = DataLoader(train_data,batch_size=64)
 test_loader = DataLoader(test_data,batch_size=64)
 
 # 创建网络模型
-
-chen = Chen()
+alexnet = alex()
 
 # 创建损失函数
 loss_fn = nn.CrossEntropyLoss()
@@ -40,7 +39,7 @@ loss_fn = nn.CrossEntropyLoss()
 # 优化器
 # learning_rate = 1e-2 相当于(10)^(-2)
 learning_rate = 0.01
-optim = torch.optim.SGD(chen.parameters(),lr=learning_rate)
+optim = torch.optim.SGD(alexnet.parameters(),lr=learning_rate)
 
 # 设置训练网络的一些参数
 total_train_step = 0 #记录训练的次数
@@ -58,7 +57,7 @@ for i in range(epoch):
     # 训练步骤
     for data in train_loader:
         imgs, targets = data
-        outputs = chen(imgs)
+        outputs = alexnet(imgs)
         loss = loss_fn(outputs,targets)
 
         # 优化器优化模型
@@ -81,7 +80,7 @@ for i in range(epoch):
     with torch.no_grad():
         for data in test_loader:
             imgs, targets = data
-            outputs = chen(imgs)
+            outputs = alexnet(imgs)
             # 损失
             loss = loss_fn(outputs,targets)
             total_test_loss += loss.item()
@@ -96,7 +95,7 @@ for i in range(epoch):
     total_test_step += 1
 
     # 保存每一轮训练模型
-    torch.save(chen,f"model_save\\chen_{i}.pth")
+    torch.save(alexnet,f"model_save\\alex_{i}.pth")
     print("模型已保存")
 
 writer.close()
